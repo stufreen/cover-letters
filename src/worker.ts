@@ -35,22 +35,47 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     initializeOpenAI({ organization: env.OPENAI_API_ORGANIZATION, apiKey: env.OPENAI_API_KEY });
 
-    // const prompt = createPrompt({
+    if (!request.body) {
+      throw new Error('Missing body');
+    }
+
+    const bodyParsed = await readBody(request.body);
+
+    const { jobDescription, qualifications, companyName } = bodyParsed;
+
+    if (!jobDescription || !qualifications || !companyName) {
+      throw new Error('Incorrect parameters');
+    }
+
+    const prompt = createPrompt({
+      jobDescription,
+      qualifications,
+      tone: 'casual, clever, brief and fun',
+      companyName,
+    });
+
+    const openAIResponse = await completion({ prompt });
+
+    return new Response(openAIResponse.choices[0].text);
+
+    // const messages = createChatPrompt({
     //   jobDescription: testData.jobDescription,
     //   qualifications: testData.qualifications,
-    //   tone: 'Professional and energetic',
+    //   tone: 'casual, clever, brief and fun',
     //   companyName: testData.companyName,
     // });
 
-    const messages = createChatPrompt({
-      jobDescription: testData.jobDescription,
-      qualifications: testData.qualifications,
-      tone: 'casual, clever, brief and fun',
-      companyName: testData.companyName,
-    });
+    // const openAIResponse = await chat({ messages });
 
-    const openAIResponse = await chat({ messages });
-
-    return new Response(openAIResponse.choices[0].message.content);
+    // return new Response(openAIResponse.choices[0].message.content);
   },
 };
+
+async function readBody(rs: ReadableStream) {
+  let body = '';
+  let utf8decoder = new TextDecoder();
+  for await (const chunk of rs) {
+    body += utf8decoder.decode(chunk);
+  }
+  return JSON.parse(body);
+}
