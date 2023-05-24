@@ -1,4 +1,6 @@
-import { initializeOpenAI, listEngines } from './openAi';
+import { chat, completion, initializeOpenAI, listEngines } from './openAi';
+import { createChatPrompt, createPrompt } from './prompt';
+import * as testData from './test/dropbox.json';
 
 /**
  * Welcome to Cloudflare Workers! This is your first worker.
@@ -32,7 +34,23 @@ export interface Env {
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     initializeOpenAI({ organization: env.OPENAI_API_ORGANIZATION, apiKey: env.OPENAI_API_KEY });
-    const engines = await listEngines();
-    return new Response(JSON.stringify(engines, null, 2));
+
+    // const prompt = createPrompt({
+    //   jobDescription: testData.jobDescription,
+    //   qualifications: testData.qualifications,
+    //   tone: 'Professional and energetic',
+    //   companyName: testData.companyName,
+    // });
+
+    const messages = createChatPrompt({
+      jobDescription: testData.jobDescription,
+      qualifications: testData.qualifications,
+      tone: 'casual, clever, brief and fun',
+      companyName: testData.companyName,
+    });
+
+    const openAIResponse = await chat({ messages });
+
+    return new Response(openAIResponse.choices[0].message.content);
   },
 };
