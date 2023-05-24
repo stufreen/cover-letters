@@ -1,5 +1,5 @@
-import { completion, initializeOpenAI } from './openAi';
-import { createPrompt } from './prompt';
+import { chat, completion, initializeOpenAI } from './openAi';
+import { createChatPrompt, createPrompt } from './prompt';
 
 /**
  * Welcome to Cloudflare Workers! This is your first worker.
@@ -46,27 +46,27 @@ export default {
       throw new Error('Incorrect parameters');
     }
 
-    const prompt = createPrompt({
+    // const prompt = createPrompt({
+    //   jobDescription,
+    //   qualifications,
+    //   tone: 'casual, clever, brief and fun',
+    //   companyName,
+    // });
+
+    // const openAIResponse = await completion({ prompt });
+
+    // return new Response(openAIResponse.choices[0].text);
+
+    const messages = createChatPrompt({
       jobDescription,
       qualifications,
       tone: 'casual, clever, brief and fun',
       companyName,
     });
 
-    const openAIResponse = await completion({ prompt });
+    const openAIResponse = await chat({ messages });
 
-    return new Response(openAIResponse.choices[0].text);
-
-    // const messages = createChatPrompt({
-    //   jobDescription: testData.jobDescription,
-    //   qualifications: testData.qualifications,
-    //   tone: 'casual, clever, brief and fun',
-    //   companyName: testData.companyName,
-    // });
-
-    // const openAIResponse = await chat({ messages });
-
-    // return new Response(openAIResponse.choices[0].message.content);
+    return new Response(openAIResponse.choices[0].message.content);
   },
 };
 
