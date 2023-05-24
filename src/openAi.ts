@@ -22,7 +22,7 @@ export function initializeOpenAI({ organization, apiKey }: InitializeOpenAI) {
       if (response.status === 200) {
         return response.json();
       } else {
-        console.log(response);
+        console.log(JSON.stringify(response));
         throw new Error(response.statusText);
       }
     });
