@@ -1,6 +1,5 @@
-import { chat, completion, initializeOpenAI, listEngines } from './openAi';
-import { createChatPrompt, createPrompt } from './prompt';
-import * as testData from './test/dropbox.json';
+import { completion, initializeOpenAI } from './openAi';
+import { createPrompt } from './prompt';
 
 /**
  * Welcome to Cloudflare Workers! This is your first worker.
