@@ -1,4 +1,4 @@
-import { chat, completion, initializeOpenAI } from './openAi';
+import { chat, completion, initializeOpenAI, openai } from './openAi';
 import { createChatPrompt, createPrompt } from './prompt';
 
 /**
@@ -32,6 +32,40 @@ export interface Env {
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,HEAD,POST,OPTIONS',
+      'Access-Control-Max-Age': '86400',
+    };
+
+    async function handleOptions(request: Request) {
+      if (
+        request.headers.get('Origin') !== null &&
+        request.headers.get('Access-Control-Request-Method') !== null &&
+        request.headers.get('Access-Control-Request-Headers') !== null
+      ) {
+        // Handle CORS preflight requests.
+        return new Response(null, {
+          headers: {
+            ...corsHeaders,
+            'Access-Control-Allow-Headers': request.headers.get('Access-Control-Request-Headers') ?? '',
+          },
+        });
+      } else {
+        // Handle standard OPTIONS request.
+        return new Response(null, {
+          headers: {
+            Allow: 'GET, HEAD, POST, OPTIONS',
+          },
+        });
+      }
+    }
+
+    if (request.method === 'OPTIONS') {
+      // Handle CORS preflight requests
+      return handleOptions(request);
+    }
+
     initializeOpenAI({ organization: env.OPENAI_API_ORGANIZATION, apiKey: env.OPENAI_API_KEY });
 
     if (!request.body) {
@@ -46,27 +80,29 @@ export default {
       throw new Error('Incorrect parameters');
     }
 
-    // const prompt = createPrompt({
-    //   jobDescription,
-    //   qualifications,
-    //   tone: 'casual, clever, brief and fun',
-    //   companyName,
-    // });
-
-    // const openAIResponse = await completion({ prompt });
-
-    // return new Response(openAIResponse.choices[0].text);
-
     const messages = createChatPrompt({
       jobDescription,
       qualifications,
-      tone: 'casual, clever, brief and fun',
+      tone: 'casual, clever, and brief',
       companyName,
     });
 
+    let { readable, writable } = new TransformStream();
+
     const openAIResponse = await chat({ messages });
 
-    return new Response(openAIResponse.choices[0].message.content);
+    openAIResponse.body.pipeTo(writable);
+
+    return new Response(readable, {
+      status: 200,
+      statusText: 'ok',
+      headers: {
+        'content-type': 'application/json;charset=UTF-8',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS',
+        'Access-Control-Allow-Headers': '*',
+      },
+    });
   },
 };
 

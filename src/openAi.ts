@@ -20,7 +20,7 @@ export function initializeOpenAI({ organization, apiKey }: InitializeOpenAI) {
       body: params ? JSON.stringify(params) : undefined,
     }).then((response) => {
       if (response.status === 200) {
-        return response.json();
+        return response;
       } else {
         console.log(JSON.stringify(response));
         throw new Error(response.statusText);
@@ -52,5 +52,5 @@ interface Chat {
 }
 
 export function chat({ messages }: Chat) {
-  return openai?.request('https://api.openai.com/v1/chat/completions', { messages, model: 'gpt-3.5-turbo' });
+  return openai?.request('https://api.openai.com/v1/chat/completions', { messages, model: 'gpt-3.5-turbo', stream: true });
 }
