@@ -1,9 +1,9 @@
 export const lengthToWords = (length: string) => {
   switch (length) {
     case 'short':
-      return 75;
+      return 100;
     case 'long':
-      return 250;
+      return 200;
     default:
       return 150;
   }

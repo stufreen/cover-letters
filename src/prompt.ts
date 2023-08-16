@@ -23,16 +23,16 @@ export function createChatPrompt({ jobDescription, qualifications, companyName, 
   console.log(words);
   return [
     {
-      role: 'user',
-      content: `Write a cover letter body for ${companyName}. It must be written in a ${tone} tone. The cover letter should highlight areas where my qualifications match the job description. Don't mention areas where my qualifications are not part of the job description. The max length is ${words} words.`,
+      role: 'system',
+      content: `In ${words} words or less, write a cover letter body for ${companyName}. It must be written in a ${tone} tone. The cover letter should only highlight areas where my qualifications match the job description.`,
     },
     {
       role: 'user',
-      content: `The job description is: ${jobDescription}`,
+      content: `The job description is: \n\n"""\n${jobDescription}\n"""`,
     },
     {
       role: 'user',
-      content: `My qualifications are: ${qualifications}`,
+      content: `My qualifications are: \n\n"""\n${qualifications}\n"""`,
     },
   ];
 }
