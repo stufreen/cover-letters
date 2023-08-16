@@ -74,17 +74,18 @@ export default {
 
     const bodyParsed = await readBody(request.body);
 
-    const { jobDescription, qualifications, companyName } = bodyParsed;
+    const { jobDescription, qualifications, companyName, tone, length } = bodyParsed;
 
-    if (!jobDescription || !qualifications || !companyName) {
+    if (!jobDescription || !qualifications || !companyName || !tone || !length) {
       throw new Error('Incorrect parameters');
     }
 
     const messages = createChatPrompt({
       jobDescription,
       qualifications,
-      tone: 'casual, clever, and brief',
+      tone,
       companyName,
+      length,
     });
 
     let { readable, writable } = new TransformStream();

@@ -1,8 +1,11 @@
+import { lengthToWords } from './lengthToWords';
+
 interface CreatePrompt {
   jobDescription: string;
   qualifications: string;
   companyName: string;
   tone: string;
+  length: string;
 }
 
 export function createPrompt({ jobDescription, qualifications, companyName, tone }: CreatePrompt) {
@@ -15,11 +18,13 @@ export function createPrompt({ jobDescription, qualifications, companyName, tone
   `;
 }
 
-export function createChatPrompt({ jobDescription, qualifications, companyName, tone }: CreatePrompt) {
+export function createChatPrompt({ jobDescription, qualifications, companyName, tone, length }: CreatePrompt) {
+  const words = lengthToWords(length);
+  console.log(words);
   return [
     {
       role: 'user',
-      content: `Write a cover letter body for ${companyName}. It must be no longer than two paragraphs long and written in a ${tone} tone. The cover letter should highlight areas where my qualifications match the job description. Don't mention areas where my qualifications are not part of the job description.`,
+      content: `Write a cover letter body for ${companyName}. It must be written in a ${tone} tone. The cover letter should highlight areas where my qualifications match the job description. Don't mention areas where my qualifications are not part of the job description. The max length is ${words} words.`,
     },
     {
       role: 'user',
