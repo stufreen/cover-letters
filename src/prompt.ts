@@ -20,7 +20,6 @@ export function createPrompt({ jobDescription, qualifications, companyName, tone
 
 export function createChatPrompt({ jobDescription, qualifications, companyName, tone, length }: CreatePrompt) {
   const words = lengthToWords(length);
-  console.log(words);
   return [
     {
       role: 'system',
