@@ -23,7 +23,7 @@ export function createChatPrompt({ jobDescription, qualifications, companyName, 
   return [
     {
       role: 'system',
-      content: `In ${words} words or less, write a cover letter body for ${companyName}. It must be written in a ${tone} tone. The cover letter should only highlight areas where my qualifications match the job description.`,
+      content: `Write a cover letter body for ${companyName}. It must be written in a ${tone} tone. The cover letter should only highlight areas where my qualifications match the job description. Limit your response to ${words} completion_tokens or less.`,
     },
     {
       role: 'user',
