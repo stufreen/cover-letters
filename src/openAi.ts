@@ -52,5 +52,5 @@ interface Chat {
 }
 
 export function chat({ messages }: Chat) {
-  return openai?.request('https://api.openai.com/v1/chat/completions', { messages, model: 'gpt-4o', stream: true });
+  return openai?.request('https://api.openai.com/v1/chat/completions', { messages, model: 'gpt-4.1-mini', stream: true });
 }
