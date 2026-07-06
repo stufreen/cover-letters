@@ -90,20 +90,25 @@ export default {
 
     let { readable, writable } = new TransformStream();
 
-    const openAIResponse = await chat({ messages });
+    try {
+      const openAIResponse = await chat({ messages });
 
-    openAIResponse.body.pipeTo(writable);
+      openAIResponse.body.pipeTo(writable);
 
-    return new Response(readable, {
-      status: 200,
-      statusText: 'ok',
-      headers: {
-        'content-type': 'application/json;charset=UTF-8',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS',
-        'Access-Control-Allow-Headers': '*',
-      },
-    });
+      return new Response(readable, {
+        status: 200,
+        statusText: 'ok',
+        headers: {
+          'content-type': 'application/json;charset=UTF-8',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS',
+          'Access-Control-Allow-Headers': '*',
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      return new Response('Error', { status: 500 });
+    }
   },
 };
 
